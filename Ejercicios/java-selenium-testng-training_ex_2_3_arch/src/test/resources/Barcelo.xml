@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">  
+<suite name="Test Hotel Barcelo">
+	<parameter name="url" 	value="https://barcelo.com/es-es/" />
+	<parameter name="browserName" value="chrome" />
+	
+	<listeners>
+        <listener class-name="com.alten.training.utils.TestListener"/>
+	</listeners>
+
+	<test name="TestCheckReservar">
+		<parameter name="hotelName" value="Barcelo Sants"/>  
+		<parameter name="numAdults" value="1"/>
+		<parameter name="numChild" value="2"/>
+		<classes>
+			<class name="com.alten.training.tests.TestBarcelo"/>
+		</classes>
+	</test>
+</suite>

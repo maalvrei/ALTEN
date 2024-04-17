@@ -1,0 +1,61 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white w-100 navigation" id="navbar">
+    <div class="container">
+      <a class="navbar-brand font-weight-bold" [routerLink]="['/home']">E-Shop</a>
+  
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar"
+        aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
+
+      <!-- Navbar-collapse -->
+  
+      <ul class="top-menu list-inline mb-0 pb-3 d-none d-lg-block" id="top-menu">
+  
+        <li class="dropdown cart-nav dropdown-slide list-inline-item">
+          <a class="dropdown-toggle cart-icon" data-toggle="dropdown" data-hover="dropdown">
+            <i class="tf-ion-android-cart"></i>
+          </a>
+          <div class="dropdown-menu cart-dropdown">
+            <!-- Cart Item -->
+            <div class="media">
+              <a>
+                <img class="media-object img- mr-3" src="assets/images/p-1.jpg" alt="image" />
+              </a>
+              <div class="media-body">
+                <h6>Lampara de Aluminio</h6>
+                <div class="cart-price">
+                  <span>1 x</span>
+                  <span>1250.00</span>
+                </div>
+              </div>
+              <a class="remove"><i class="tf-ion-close"></i></a>
+            </div><!-- / Cart Item -->
+  
+            <!-- Cart Item -->
+            <div class="media">
+              <a>
+                <img class="media-object img-fluid mr-3" src="assets/images/p-2.jpg" alt="image" />
+              </a>
+              <div class="media-body">
+                <h6>Bolso de Tela</h6>
+                <div class="cart-price">
+                  <span>1 x</span>
+                  <span>1250.00</span>
+                </div>
+              </div>
+              <a class="remove"><i class="tf-ion-close"></i></a>
+            </div><!-- / Cart Item -->
+  
+            <div class="cart-summary">
+              <span class="h6">Total</span>
+              <span class="total-price h6">$1799.00</span>
+            </div>
+          </div>
+        </li>
+        <li class="list-inline-item cart-icon">
+              <button class="rounded" type="button" (click)="logout()">Log Out</button> 
+        </li>
+      </ul>
+    </div>
+  </nav>

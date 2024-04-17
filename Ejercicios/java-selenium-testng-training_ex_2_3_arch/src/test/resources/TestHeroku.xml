@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<suite name="Test with Listener">
+	<parameter name="url" 	value="http://the-internet.herokuapp.com/" />
+	<parameter name="browserName" value="chrome" />
+	
+	<listeners>
+        <listener class-name="com.alten.training.utils.TestListener"/>
+	</listeners>
+
+	<test name="testCheckBox">
+		<classes>
+			<class name="com.alten.training.tests.TestHeroku">
+				<methods>
+					<include name="testCheckBox" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+
+	<test name="testDynamicContent">
+		<classes>
+			<class name="com.alten.training.tests.TestHeroku">
+				<methods>
+					<include name="testDynamicContent" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+
+	<test name="testHorizontalSliderPage">
+		<classes>
+			<class name="com.alten.training.tests.TestHeroku">
+				<methods>
+					<include name="testHorizontalSliderPage" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+
+
+	<test name="testJavaScriptAlertsPage">
+		<classes>
+			<class name="com.alten.training.tests.TestHeroku">
+				<methods>
+					<include name="testJavaScriptAlertsPage" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+
+	<test name="testDynamicControlsPage">
+		<classes>
+			<class name="com.alten.training.tests.TestHeroku">
+				<methods>
+					<include name="testDynamicControlsPage" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+
+	<test name="testDisappearingElementsPage">
+		<classes>
+			<class name="com.alten.training.tests.TestHeroku">
+				<methods>
+					<include name="testDisappearingElementsPage" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+
+	<test name="testChallengingDOMPage">
+		<classes>
+			<class name="com.alten.training.tests.TestHeroku">
+				<methods>
+					<include name="testChallengingDOMPage" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+
+
+	<test name="testMultipleWindowsPage">
+		<classes>
+			<class name="com.alten.training.tests.TestHeroku">
+				<methods>
+					<include name="testMultipleWindowsPage" />
+				</methods>
+			</class>
+		</classes>
+	</test>
+
+
+
+</suite>

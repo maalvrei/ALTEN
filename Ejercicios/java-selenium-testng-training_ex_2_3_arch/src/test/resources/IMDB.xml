@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+<suite name="Test IMDB" >
+	<parameter name="url" value="https://imdb.com/"/>
+	<parameter name="browserName" value="chrome"/>
+    <listeners>
+        <listener class-name="com.alten.training.utils.TestListener"/>
+    </listeners>
+
+    <test name="Test Login Incorrect">
+    	<parameter name="email" value="jaime.rodriguez@alten.es"/>
+		<parameter name="password" value="dkjfdlfjlkdsfjd"/>
+        <classes>
+            <class name="com.alten.training.tests.TestIMDB"/>
+        </classes>
+    </test>
+</suite>

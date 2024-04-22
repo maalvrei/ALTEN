@@ -5,12 +5,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-
-import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.support.ui.Select;
 
 public class HomePage extends BasePage {
 
@@ -24,16 +22,21 @@ public class HomePage extends BasePage {
     private static final By PERSONS_NUMBER = By.id("rooms-fb");
     private static final By ADULTS_NUMBER = By.xpath("//input[@name='adults']");
     private static final By CHILDS_NUMBER = By.xpath("//input[@name='childs']");
+    private static final By CHILDS_AGE = By.xpath("//select[@class=\"input-age-JS text-center\" and @name=\"child-age\"]\n");
+    private static final By SEARCH_BUTTON = By.xpath("(//button[@id='fastbooking_cta_booking_home'])[1]");
 
     public boolean isAValidDay (WebElement day) {
+        LOGGER.info("Comprobando si el día " + day.getText() + " es un día válido.");
         return !day.getAttribute("class").contains("invalid");
     }
 
     public boolean isTheLastDay (WebElement day, List<WebElement> month) {
+        LOGGER.info("Calculando si es el último día del mes o no, para saltar al siguiente mes en consecuencia.");
         return month.indexOf(day) == month.size()-1;
     }
 
     public WebElement[] thereAreFiveDaysAvailable(WebElement day, List<WebElement> month1, List<WebElement> month2) {
+        LOGGER.info("Calculando si hay 5 días disponibles despues del primer día válido del mes...");
         List<WebElement> monthSimplified = month1.subList(month1.indexOf(day),month1.size());
         int validDaysFound = 0;
         int j = 0;
@@ -52,9 +55,13 @@ public class HomePage extends BasePage {
     }
 
     public boolean monthWithValidDays (List<WebElement> days) {
+        LOGGER.info("Validando si es un mes con mínimo un día seleccionable.");
         for (WebElement day : days)
-            if (isAValidDay(day))
+            if (isAValidDay(day)) {
+                LOGGER.info("El mes es válido.");
                 return true;
+            }
+        LOGGER.info("El mes no es válido.");
         return false;
     }
 
@@ -77,29 +84,54 @@ public class HomePage extends BasePage {
     }
 
     public List<WebElement> monthWithoutEmptyDays(List<WebElement> month) {
+        LOGGER.info("Eliminando días vacíos del mes. Se corresponden con las celdas vacías.");
         return month.stream().filter(d-> !d.getText().isEmpty()).toList();
     }
 
-    public void enterName() {
-        this.waitToElementBeClickable(COOKIES_BUTTON);
+    public void acceptCookies() {
+        LOGGER.info("Aceptado cookies");
+        waitPresenceOfElement(COOKIES_BUTTON);
+        waitToElementBeClickable(COOKIES_BUTTON);
         WebElement cookies = getDriver().findElement(COOKIES_BUTTON);
         cookies.click();
-        this.waitToElementBeClickable(DESTINATION_INPUT);
+        LOGGER.info("Cookies aceptadas");
+    }
+
+    public void selectHotel() {
+        LOGGER.info("Seleccionando hotel...");
+        waitPresenceOfElement(DESTINATION_INPUT);
+        waitToElementBeClickable(DESTINATION_INPUT);
         WebElement destinationInput = getDriver().findElement(DESTINATION_INPUT);
         destinationInput.click();
         destinationInput.sendKeys("Barcelona");
-        this.waitToElementBeClickable(HOTEL_ACCORDION);
-        this.waitToElementBeClickable(HOTEL_SANTS);
+        waitPresenceOfElement(HOTEL_ACCORDION);
+        waitToElementBeClickable(HOTEL_ACCORDION);
+        waitPresenceOfElement(HOTEL_SANTS);
+        waitToElementBeClickable(HOTEL_SANTS);
         WebElement hotel = getDriver().findElement(HOTEL_SANTS);
         hotel.click();
+        LOGGER.info("Hotel selecionado: " + hotel.getText());
+    }
+
+    public void selectDays () {
+        LOGGER.info("Clickando los días...");
         waitPresenceOfElement(CALENDAR_1);
         waitToElementBeClickable(CALENDAR_1);
-        wait.until(ExpectedConditions.elementToBeClickable(initialAndFinalDay()[0]));
-        initialAndFinalDay()[0].click();
-        wait.until(ExpectedConditions.elementToBeClickable(initialAndFinalDay()[1]));
-        initialAndFinalDay()[1].click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(CALENDAR_1));
+        for (WebElement day : initialAndFinalDay()) {
+            wait.until(ExpectedConditions.visibilityOf(day));
+            wait.until(ExpectedConditions.elementToBeClickable(day));
+            day.click();
+            LOGGER.info("Día seleccionado: " + day.getText());
+        }
+    }
+
+    public void selectPersons() {
+        LOGGER.info("Seleccionando huéspedes.");
         WebElement num = getDriver().findElement(PERSONS_NUMBER);
         num.click();
+        waitPresenceOfElement(ADULTS_NUMBER);
+        waitToElementBeClickable(ADULTS_NUMBER);
         WebElement adultsInput = getDriver().findElement(ADULTS_NUMBER);
         adultsInput.clear();
         adultsInput.sendKeys("2");
@@ -107,6 +139,27 @@ public class HomePage extends BasePage {
         childsInput.clear();
         childsInput.sendKeys("1");
         childsInput.sendKeys(Keys.ENTER);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(CHILDS_AGE));
+        WebElement childsAge = getDriver().findElement(CHILDS_AGE);
+        childsAge.click();
+        Select selectAge = new Select(childsAge);
+        selectAge.selectByValue("11");
+        LOGGER.info("Se han añadido dos adultos y un niño de once años.");
+    }
+
+    public void search () {
+        LOGGER.info("Datos introducidos a la espera de ser enviados.");
+        waitToElementBeClickable(SEARCH_BUTTON);
+        WebElement searchButton = getDriver().findElement(SEARCH_BUTTON);
+        searchButton.click();
+    }
+
+    public void enterDatesAndSearch() {
+        acceptCookies();
+        selectHotel();
+        selectDays();
+        selectPersons();
+        search();
     }
 
 }

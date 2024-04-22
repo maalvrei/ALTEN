@@ -1,5 +1,6 @@
 package com.alten.training.tests;
 
+import com.alten.training.pages.barcelo.ConfirmationPage;
 import com.alten.training.pages.barcelo.HomePage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,7 +17,9 @@ public class TestBarcelo extends BaseTest{
 	public void testReservationHotel(String hotelName, int numAdults, int numChild) {
 		LOGGER.info("hotelName="+hotelName+",numAdult="+numAdults+",numChild="+numChild);
 		HomePage homePage = new HomePage();
-		homePage.enterName();
+		homePage.enterDatesAndSearch();
+		ConfirmationPage confirmationPage = new ConfirmationPage();
+		confirmationPage.confirmReservation();
 	}
 
 }

@@ -118,6 +118,7 @@ public class HomePage extends BasePage {
         waitPresenceOfElement(CALENDAR_1);
         waitToElementBeClickable(CALENDAR_1);
         wait.until(ExpectedConditions.visibilityOfElementLocated(CALENDAR_1));
+        wait.until(ExpectedConditions.presenceOfElementLocated(CALENDAR_1));
         for (WebElement day : initialAndFinalDay()) {
             wait.until(ExpectedConditions.visibilityOf(day));
             wait.until(ExpectedConditions.elementToBeClickable(day));

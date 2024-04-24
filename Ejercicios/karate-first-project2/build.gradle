@@ -1,0 +1,14 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral {
+        url "https://repo.maven.apache.org/maven2"
+    }
+}
+
+dependencies {
+    testImplementation 'com.intuit.karate:karate-junit5:1.4.1.RC4'
+}
+

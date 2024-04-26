@@ -13,7 +13,7 @@
 		<!-- Dependencies -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.8</java.version>
+		<java.version>11</java.version>
 		<log4j2.version>2.9.0</log4j2.version>
 		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
 	</properties>

@@ -39,12 +39,6 @@ public class CalculatorSteps {
     public void i_divide_and(int arg1, int arg2) throws Throwable {
         calculator.divide(arg1, arg2);
     }
-
-    @When("^I elevate (\\d+) to (\\d+)$")
-    public void i_elevate_and(int arg1, int arg2) throws Throwable {
-        calculator.elevateTo(arg1, arg2);
-    }
-
     @Then("^the result should be (\\d+)$")
     public void the_result_should_be(int result) throws Throwable {
         assertEquals(result, calculator.getResult());

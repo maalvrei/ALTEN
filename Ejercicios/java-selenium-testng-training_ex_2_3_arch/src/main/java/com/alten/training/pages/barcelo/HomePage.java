@@ -3,10 +3,13 @@ package com.alten.training.pages.barcelo;
 import com.alten.training.pages.BasePage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.jcajce.provider.symmetric.DES;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.support.ui.Select;
 
@@ -16,7 +19,7 @@ public class HomePage extends BasePage {
     private static final By DESTINATION_INPUT = By.cssSelector("#destination-fb");
     private static final By COOKIES_BUTTON = By.id("didomi-notice-agree-button");
     private static final By HOTEL_ACCORDION = By.cssSelector(".accordion-content.destination-hotels-JS");
-    private static final By HOTEL_SANTS = By.xpath("//ul[@class='c-fastbooking__submenu-search-destination-barcelo-hotel-list-JS']//li[@role='button'][normalize-space()='Barceló Sants']");
+    private static final By HOTEL_SANTS = By.xpath("(//li[@role='button'][normalize-space()='Barceló Sants'])[2]");
     private static final By CALENDAR_1 = By.id("month-1-1");
     private static final By CALENDAR_2 = By.id("month-2-1");
     private static final By PERSONS_NUMBER = By.id("rooms-fb");
@@ -85,7 +88,9 @@ public class HomePage extends BasePage {
 
     public List<WebElement> monthWithoutEmptyDays(List<WebElement> month) {
         LOGGER.info("Eliminando días vacíos del mes. Se corresponden con las celdas vacías.");
-        return month.stream().filter(d-> !d.getText().isEmpty()).toList();
+        return month.stream()
+                .filter(d -> !d.getText().isEmpty())
+                .collect(Collectors.toList());
     }
 
     public void acceptCookies() {
@@ -99,16 +104,14 @@ public class HomePage extends BasePage {
 
     public void selectHotel() {
         LOGGER.info("Seleccionando hotel...");
-        waitPresenceOfElement(DESTINATION_INPUT);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(DESTINATION_INPUT));
         waitToElementBeClickable(DESTINATION_INPUT);
         WebElement destinationInput = getDriver().findElement(DESTINATION_INPUT);
         destinationInput.click();
         destinationInput.sendKeys("Barcelona");
-        waitPresenceOfElement(HOTEL_ACCORDION);
-        waitToElementBeClickable(HOTEL_ACCORDION);
-        waitPresenceOfElement(HOTEL_SANTS);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(HOTEL_ACCORDION));
+        WebElement hotel = getDriver().findElement(HOTEL_ACCORDION).findElement(HOTEL_SANTS);
         waitToElementBeClickable(HOTEL_SANTS);
-        WebElement hotel = getDriver().findElement(HOTEL_SANTS);
         hotel.click();
         LOGGER.info("Hotel selecionado: " + hotel.getText());
     }

@@ -21,3 +21,9 @@ Feature: Calculator
     Given I have a calculator
     When I divide 6 and 2
     Then the result should be 3
+
+    Scenario: Elevate a number
+    Given I have a calculator
+    When I elevate 6 to 2
+    Then the result should be 36
+

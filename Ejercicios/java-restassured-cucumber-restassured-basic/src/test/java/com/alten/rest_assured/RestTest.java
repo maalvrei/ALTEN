@@ -1,6 +1,6 @@
 package com.alten.rest_assured;
 
- import static io.restassured.RestAssured.*;
+import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;

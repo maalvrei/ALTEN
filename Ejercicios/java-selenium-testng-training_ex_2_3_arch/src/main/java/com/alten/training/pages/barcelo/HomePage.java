@@ -3,7 +3,6 @@ package com.alten.training.pages.barcelo;
 import com.alten.training.pages.BasePage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bouncycastle.jcajce.provider.symmetric.DES;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -16,16 +15,15 @@ import org.openqa.selenium.support.ui.Select;
 public class HomePage extends BasePage {
 
     private static final Logger LOGGER = LogManager.getLogger(com.alten.training.pages.heroku.HomePage.class);
-    private static final By DESTINATION_INPUT = By.cssSelector("#destination-fb");
+    private static final By DESTINATION_INPUT = By.id("destination-fb");
     private static final By COOKIES_BUTTON = By.id("didomi-notice-agree-button");
-    private static final By HOTEL_ACCORDION = By.cssSelector(".accordion-content.destination-hotels-JS");
-    private static final By HOTEL_SANTS = By.xpath("(//li[@role='button'][normalize-space()='Barceló Sants'])[2]");
+    private static final By HOTEL_SANTS = By.cssSelector(".px-2.mod--hover-blue.hidden-facet-JS[data-percentage-match='-8.333333333333334'][data-parent-element='/content/dam/bhg/data/es-es/destinations/province/barcelona'][data-current-element='/content/dam/bhg/data/es-es/hotels/barcelo-sants/barcelo-sants']");
     private static final By CALENDAR_1 = By.id("month-1-1");
     private static final By CALENDAR_2 = By.id("month-2-1");
     private static final By PERSONS_NUMBER = By.id("rooms-fb");
-    private static final By ADULTS_NUMBER = By.xpath("//input[@name='adults']");
-    private static final By CHILDS_NUMBER = By.xpath("//input[@name='childs']");
-    private static final By CHILDS_AGE = By.xpath("//select[@class=\"input-age-JS text-center\" and @name=\"child-age\"]\n");
+    private static final By ADULTS_NUMBER = By.name("adults");
+    private static final By CHILDS_NUMBER = By.name("childs");
+    private static final By CHILDS_AGE = By.name("child-age");
     private static final By SEARCH_BUTTON = By.xpath("(//button[@id='fastbooking_cta_booking_home'])[1]");
 
     public boolean isAValidDay (WebElement day) {
@@ -104,26 +102,19 @@ public class HomePage extends BasePage {
 
     public void selectHotel() {
         LOGGER.info("Seleccionando hotel...");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(DESTINATION_INPUT));
         waitToElementBeClickable(DESTINATION_INPUT);
         WebElement destinationInput = getDriver().findElement(DESTINATION_INPUT);
         destinationInput.click();
         destinationInput.sendKeys("Barcelona");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(HOTEL_ACCORDION));
-        WebElement hotel = getDriver().findElement(HOTEL_ACCORDION).findElement(HOTEL_SANTS);
-        waitToElementBeClickable(HOTEL_SANTS);
+        WebElement hotel = getDriver().findElement(HOTEL_SANTS);
         hotel.click();
         LOGGER.info("Hotel selecionado: " + hotel.getText());
     }
 
     public void selectDays () {
         LOGGER.info("Clickando los días...");
-        waitPresenceOfElement(CALENDAR_1);
         waitToElementBeClickable(CALENDAR_1);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(CALENDAR_1));
-        wait.until(ExpectedConditions.presenceOfElementLocated(CALENDAR_1));
         for (WebElement day : initialAndFinalDay()) {
-            wait.until(ExpectedConditions.visibilityOf(day));
             wait.until(ExpectedConditions.elementToBeClickable(day));
             day.click();
             LOGGER.info("Día seleccionado: " + day.getText());

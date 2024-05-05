@@ -12,9 +12,6 @@ import io.restassured.http.ContentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import io.restassured.response.Response;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 
 public class PetStoreSteps {
@@ -22,15 +19,18 @@ public class PetStoreSteps {
 	
 	private static final Logger LOGGER = LogManager.getLogger(PetStoreSteps.class);
 	
-	private static String PET_GET = "/pet/";
-	private static String PET_POST = "/pet";
+	private static final String PET_GET = "/pet/";
+	private static final String PET_POST = "/pet";
+	private static final String PET_PUT = "/pet";
+	private static final String PET_DELETE = "/pet/";
 	
 	
-	private int currentIDPet = 0;
+	private long currentIDPet = 0;
 	private Response currentResponse = null;
 	private Pet currentPet = null;
 
 	//GET
+
 	@Given("^An Pet with ID equals to (\\d+)$")
 	public void an_Pet_with_ID_equals_to(int id) throws Throwable {
 	   currentIDPet = id;
@@ -43,7 +43,6 @@ public class PetStoreSteps {
 		LOGGER.info("statusCode="+response.getStatusCode());
 		setCurrentResponse(response);
 
-		
 	}
 
 	@Then("^the response return the status code (\\d+)$")
@@ -53,13 +52,14 @@ public class PetStoreSteps {
 	}
 
 	//POST
+
 	@Given("^Add a pet with name (.*) and (.*)$")
 	public void add_a_pet_whit_name(String name, String tags) throws Throwable {
-		HashMap<String, String> tags_map = new HashMap<>();
-		tags_map.put("name",tags);
-		List<HashMap<String,String>> tags_list = new ArrayList<>();
-		tags_list.add(tags_map);
-		Pet pet = new Pet(name, tags_list);
+		// Creo el objeto pet con los datos de cada example, el constructor de la clase crea la lista de diccionarios
+		// que son los tags
+		Pet pet = new Pet(name, tags);
+		// Para saber con qué pet estoy en cada momento creé el atributo currentPet, aquí lo seteo para poder compararlo
+		// y acceder después a él para hacer el post
 		setCurrentPet(pet);
 	}
 
@@ -70,26 +70,64 @@ public class PetStoreSteps {
 				.contentType(ContentType.JSON)
 				.body(getCurrentPet())
 				.post(PET_POST);
+		LOGGER.info("statusCode="+response.getStatusCode());
 		setCurrentResponse(response);
+		// Aquí vuelvo a setear el currentPet con el response de la petición post. El motivo es que
+		// la API crea un ID para cada tag, y como yo no lo estoy manejando, lo que hago es coger el
+		// objeto pet del response, que ya tiene el ID generado automáticamente, así evito líos con los ID del tag
+		setCurrentPet(response.as(Pet.class));
+		setCurrentIDPet(currentPet.getId());
 	}
 
 	@And("^Verify with a Get Request to data is correct$")
 	public void verify_data_is_correct() {
-		LOGGER.info("Verifing data is correct");
-		Response response = given().get(PET_GET+getCurrentResponse().as(Pet.class).getId());
+		LOGGER.info("Verifying data is correct");
+		//Hago una peticion con el ID del currentPet para comprobar que el nuevo Pet
+		//se creó correctamente y a lo que recibo lo llamo petFromGet y lo mapeo como un Pet, para compararlo al Pet
+		//que ya tenía y con el que hice set en el POST
+		Response response = given().get(PET_GET+getCurrentIDPet());
 		Pet petFromGet = response.as(Pet.class);
-        assertEquals(getCurrentPet().getName(), petFromGet.getName());
-		assertEquals(getCurrentPet().getTags().get(0).get("name"),petFromGet.getTags().get(0).get("name"));
+        assertEquals(getCurrentPet(),petFromGet);
 	}
 
+	//PUT
+
+	@When("^I Modify the pet name with (.*) and remove the tags$")
+	public void modify_name_and_remove_tags(String updateName) {
+		LOGGER.info("Modifying name and remove tags");
+		getCurrentPet().setName(updateName);
+		getCurrentPet().removeTags();
+	}
+
+	@When("^I send a PUT Request$")
+	public void send_put_request() {
+		LOGGER.info("Sending put Request");
+		Response response = given()
+				.contentType(ContentType.JSON)
+				.body(getCurrentPet())
+				.put(PET_PUT);
+		LOGGER.info("statusCode="+response.getStatusCode());
+		setCurrentResponse(response);
+	}
+
+	//DELETE
+
+	@When("^I send a DELETE Request$")
+	public void send_delete_request() {
+		LOGGER.info("Sending delete Request");
+		Response response = given()
+				.delete(PET_DELETE+currentIDPet);
+		LOGGER.info("statusCode="+response.getStatusCode());
+		setCurrentResponse(response);
+	}
 
 	//currentResponse
 
-	public int getCurrentIDPet() {
+	public long getCurrentIDPet() {
 		return currentIDPet;
 	}
 
-	public void setCurrentIDPet(int currentIDPet) {
+	public void setCurrentIDPet(long currentIDPet) {
 		this.currentIDPet = currentIDPet;
 	}
 

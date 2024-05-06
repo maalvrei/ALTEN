@@ -1,11 +1,11 @@
 package com.alten.bdd.pages;
 
+import com.alten.bdd.exceptions.NoDayAvailableException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ public class HomePage extends BasePage {
 	private static final Logger LOGGER = LogManager.getLogger(HomePage.class);
 	private static final By DESTINATION_INPUT = By.id("destination-fb");
 	private static final By COOKIES_BUTTON = By.id("didomi-notice-agree-button");
-	private static final By HOTEL_SANTS = By.cssSelector(".px-2.mod--hover-blue.hidden-facet-JS[data-percentage-match='-8.333333333333334'][data-parent-element='/content/dam/bhg/data/es-es/destinations/province/barcelona'][data-current-element='/content/dam/bhg/data/es-es/hotels/barcelo-sants/barcelo-sants']");
+	private static final By HOTEL_SANTS = By.xpath("(//li[@role='button'][normalize-space()='Barceló Sants'])[2]");
 	private static final By CALENDAR_1 = By.id("month-1-1");
 	private static final By CALENDAR_2 = By.id("month-2-1");
 	private static final By PERSONS_NUMBER = By.id("rooms-fb");
@@ -27,28 +27,57 @@ public class HomePage extends BasePage {
 	private static final By CHILDS_AGE = By.name("child-age");
 	private static final By SEARCH_BUTTON = By.xpath("(//button[@id='fastbooking_cta_booking_home'])[1]");
 
+	// este método comprueba si el día es un día válido, es decir, que no sea un día que no se puede seleccionar
 	public boolean isAValidDay (WebElement day) {
-		LOGGER.info("Comprobando si el día " + day.getText() + " es un día válido.");
 		return !day.getAttribute("class").contains("invalid");
 	}
 
-	public WebElement[] days () {
-		List<WebElement> month1 = monthWithoutEmptyDays(CALENDAR_1);
-		List<WebElement> month2 = monthWithoutEmptyDays(CALENDAR_2);
+	// este método comprueba si el día que se está comprobando es el último día de todos, si es así se acaba el bucle
+	// y no se comprueban más días
+	public boolean isTheLastDay (WebElement day, List<WebElement> days) {
+		return days.indexOf(day) == days.size() - 1 ;
+	}
+
+	// este método establece cuáles son los días inicial y final
+	// lanza una excepción NoDayAvailableException en el caso de que el día 5 días después al día actual
+	// no sea un día disponible
+	public WebElement[] days () throws NoDayAvailableException {
+		// creo una lista única que contiene todos los días de ambos calendarios que se nos muestran
 		List<WebElement> days = new ArrayList<>();
-		days.addAll(month1);
-		days.addAll(month2);
+		days.addAll(monthWithoutEmptyDays(CALENDAR_1));
+		days.addAll(monthWithoutEmptyDays(CALENDAR_2));
+		// establezco cuál es el día actual
 		int today = LocalDate.now().getDayOfMonth();
+		// aquí compruebo si el día 5 días después de la fecha actual es un día válido con operador ternario
+		// avanzo sólo 4 posiciones en la lista porque son el número de noches que quiero estar.
 		WebElement initialDay = isAValidDay(days.get(today+4)) ? days.get(today+4) : null;
+		// si el día resulta ser null porque no es válido, lanzo la excepción
+		if (initialDay==null)
+			throw new NoDayAvailableException("No se puede hacer una reserva para dentro de 5 días");
+		// si no he lanzado la excepción porque el día no era válido, tomo su posición en la lista para calcular las noches
 		int positionOfInitialDay = days.indexOf(initialDay);
+		// inicializo el día de salida a null
 		WebElement finalDay = null;
-		for (int i = positionOfInitialDay ; i < positionOfInitialDay+5 ; i++) {
-			if (isAValidDay(days.get(i)))
-				finalDay = days.get(i);
+		for (int i = positionOfInitialDay + 1 ; i < positionOfInitialDay + 5 ; i++) {
+			// empiezo a recorrer en el día de la posición siguiente a la del día actual
+			WebElement currentDay = days.get(i);
+			// el día de salida se irá actualizando de esta manera siempre al último día válido encontrado en los 4 días siguientes
+			// al día de entrada
+			if (isAValidDay(currentDay)) {
+				finalDay = currentDay;
+				if (isTheLastDay(currentDay,days)) break;
+			} else if (!isAValidDay(currentDay)) {
+				break;
+			}
 		}
+		// si el anterior bucle no encontró un día de salida mínimo más aparte del día de entrada, lanzo la excepción
+		if (finalDay==null)
+			throw new NoDayAvailableException("No se ha podido realizar una reserva con las condiciones requeridas.");
+		// si no se lanza ninguna excepción se devuelve un array con dos posiciones, cada una es un día, el de entrada y el de salida
         return new WebElement[]{initialDay, finalDay};
 	}
 
+	// este método vacía las listas de los meses de celdas vacías, que son aquellas que no tienen ningún día, sea válido o no.
 	public List<WebElement> monthWithoutEmptyDays(By calendar) {
 		WebElement month = getDriver().findElement(calendar);
 		By tableBody = By.tagName("tbody");
@@ -80,16 +109,18 @@ public class HomePage extends BasePage {
 		LOGGER.info("Hotel selecionado: " + hotel.getText());
 	}
 
-	public void selectDays () {
+	// este método clickea los días que devuelve el método que establece qué días entramos y salimos
+	public void selectDays () throws NoDayAvailableException {
 		LOGGER.info("Clickando los días...");
 		waitToElementBeClickable(CALENDAR_1);
+		waitPresenceOfElement(CALENDAR_1);
 		for (WebElement day : days()) {
-			wait.until(ExpectedConditions.elementToBeClickable(day));
 			day.click();
 			LOGGER.info("Día seleccionado: " + day.getText());
 		}
 	}
 
+	// se añaden los adultos y el niño y se selecciona la edad de este ultimo
 	public void selectPersons() {
 		LOGGER.info("Seleccionando huéspedes.");
 		WebElement num = getDriver().findElement(PERSONS_NUMBER);
@@ -111,9 +142,9 @@ public class HomePage extends BasePage {
 		LOGGER.info("Se han añadido dos adultos y un niño de once años.");
 	}
 
+	// cuando se introducen los datos, se pulsa el botón buscar
 	public void search () {
 		LOGGER.info("Datos introducidos a la espera de ser enviados.");
-		waitToElementBeClickable(SEARCH_BUTTON);
 		WebElement searchButton = getDriver().findElement(SEARCH_BUTTON);
 		searchButton.click();
 	}

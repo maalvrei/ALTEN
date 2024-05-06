@@ -22,24 +22,16 @@ public class BarceloReservationSteps {
 		homePage.acceptCookies();
 	}
 
-	@When("^I select the hotel$")
+	@When("^I select hotel, days and persons$")
 	public void i_select_the_hotel() throws Throwable {
 		homePage.selectHotel();
-	}
-
-	@And("^I select the days$")
-	public void i_select_the_days() throws Throwable {
 		homePage.selectDays();
-	}
-
-	@And("^I select the number of persons$")
-	public void i_select_number_of_persons() throws Throwable {
 		homePage.selectPersons();
-		homePage.search();
 	}
 
 	@Then("^I go to the confirmation page$")
 	public void i_go_to_the_confirmation_page() throws Throwable {
+		homePage.search();
 		confirmationPage.confirmReservation();
 	}
 

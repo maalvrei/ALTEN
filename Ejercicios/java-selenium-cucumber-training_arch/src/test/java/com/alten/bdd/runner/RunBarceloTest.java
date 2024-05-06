@@ -6,11 +6,11 @@ import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-		  features = "classpath:cucumber/imdb_login.feature" ,
+		  features = "classpath:cucumber/barcelo_reservation.feature" ,
 		  glue = "com.alten.bdd.steps",
 		monochrome = true,
 format = "json:target/cucumber-json-report.json",
 plugin={"com.cucumber.listener.ExtentCucumberFormatter:target/cucumber-reports/report.html"}
 )
-public class RunIMDBTest {
+public class RunBarceloTest {
 }

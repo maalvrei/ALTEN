@@ -9,7 +9,7 @@ Scenario Outline: Get a PET
 	Examples:
 	
     | 	id 		| status	| 
-    | 	555555 	| 404 		|
+    | 	5555 	| 404 		|
     
 @POST
 Scenario Outline: Add a PET

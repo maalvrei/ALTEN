@@ -19,19 +19,27 @@ public class BarceloReservationSteps {
 
 	@Given("^Barcelo page is showed$")
 	public void barcelo_page_is_showed() throws Throwable {
+		LOGGER.info("Cookies aceptadas");
 		homePage.acceptCookies();
 	}
 
 	@When("^I select hotel, days and persons$")
 	public void i_select_the_hotel() throws Throwable {
+		LOGGER.info("Introduciendo datos");
 		homePage.selectHotel();
 		homePage.selectDays();
 		homePage.selectPersons();
 	}
 
-	@Then("^I go to the confirmation page$")
-	public void i_go_to_the_confirmation_page() throws Throwable {
+	@And("^I do a search with that data$")
+	public void i_do_a_search() throws Throwable {
+		LOGGER.info("Enviando datos");
 		homePage.search();
+	}
+
+	@Then("^I go to the reservation page$")
+	public void i_go_to_the_reservation_page() {
+		LOGGER.info("Moviéndose a la página de reserva");
 		confirmationPage.confirmReservation();
 	}
 

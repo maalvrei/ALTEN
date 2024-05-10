@@ -113,11 +113,14 @@ public class HomePage extends BasePage {
 	public void selectDays () throws NoDayAvailableException {
 		LOGGER.info("Clickando los días...");
 		waitToElementBeClickable(CALENDAR_1);
-		waitPresenceOfElement(CALENDAR_1);
-		for (WebElement day : days()) {
-			day.click();
-			LOGGER.info("Día seleccionado: " + day.getText());
-		}
+		WebElement initialDay = days()[0];
+		WebElement finalDay = days()[1];
+		LOGGER.info(("Día de entrada: " + initialDay.getText()));
+		wait.until(ExpectedConditions.elementToBeClickable(initialDay));
+		initialDay.click();
+		LOGGER.info(("Día de salida: " + finalDay.getText()));
+		wait.until(ExpectedConditions.elementToBeClickable(finalDay));
+		finalDay.click();
 	}
 
 	// se añaden los adultos y el niño y se selecciona la edad de este ultimo

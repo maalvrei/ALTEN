@@ -7,4 +7,5 @@ Feature: Barcelo Reservation
 Scenario: Get a reservation in Barceló Sants Hotel
 	Given Barcelo page is showed
 	When I select hotel, days and persons
-	Then I go to the confirmation page
+	And I do a search with that data
+	Then I go to the reservation page
